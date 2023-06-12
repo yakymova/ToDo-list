@@ -1,0 +1,171 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    letter-spacing: 0.3px;
+}
+
+body {
+    background-image: url("https://cdn.create.vista.com/api/media/medium/18824713/stock-photo-clip-board?token=");
+    background-size: 45% 100vh;
+    background-position: top center;
+    background-repeat: no-repeat;
+    font-size: 16px;
+}
+@media (max-width: 767.99px) {
+    body {
+        background-size: 60% 100vh;
+        font-size: 14px;
+    }
+}
+@media (max-width: 479.99px) {
+    body {
+        background-size: 90% 100vh;
+    }
+}
+
+button {
+    letter-spacing: 0.5px;
+    border: none;
+    border-radius: 5px;
+    background-color: transparent;
+    transition: all 0.2s;
+    font-size: inherit;
+}
+
+button:hover {
+    cursor: pointer;
+    box-shadow: 0px 1px 2px 0px rgba(144, 133, 133, 0.6);
+}
+
+.container {
+    width: 33.2%;
+    position: fixed;
+    top: 25%;
+    left: 33.5%;
+}
+@media (max-width: 767.99px) {
+    .container {
+        width: 44%;
+        left: 28%;
+    }
+}
+@media (max-width: 479.99px) {
+    .container {
+        width: 66%;
+        left: 17%;
+    }
+}
+
+.input-panel {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+#task-text-input {
+    flex: 1 1 auto;
+    border: none;
+    outline: none;
+    border-bottom: 1px solid transparent;
+    transition: all 0.3s;
+}
+#task-text-input:focus {
+    border-bottom: 1px solid rgb(118, 74, 13);
+}
+#add-task-btn {
+    flex: 0 1 25%;
+    padding: 5px;
+    background-color: rgba(13, 111, 118, 0.4);
+}
+@media (max-width: 479.99px) {
+    .input-panel {
+        flex-wrap: wrap;
+    }
+    #add-task-btn {
+        flex: 0 1 100%;
+        padding: 2px;
+        margin-top: 5px;
+    }
+}
+
+.controls-panel {
+    margin-bottom: 10px;
+}
+.controls-btn {
+    padding: 2px 5px;
+    background-color: rgba(175, 109, 17, 0.4);
+}
+
+.task-list {
+    max-height: 53vh;
+    overflow: auto;
+}
+@media (max-width: 1023.99px) {
+    .task-list {
+        max-height: 50vh;
+    }
+}
+@media (max-width: 479.99px) {
+    .task-list {
+        max-height: 50vh;
+    }
+}
+.task {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    position: relative;
+    background-color: transparent;
+    transition: all 0.5s;
+}
+.completed {
+    background-color: rgba(65, 172, 65, 0.6);
+}
+
+.custom-checkbox {
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+.custom-checkbox:hover {
+    cursor: pointer;
+}
+.custom-checkbox::after {
+    content: "";
+    position: absolute;
+    top: -7px;
+    left: 0;
+    height: 13px;
+    width: 13px;
+    border: 1px solid rgba(118, 74, 13, 0.5);
+    border-radius: 3px 0 3px;
+    transition: all 0.3s;
+} 
+.custom-checkbox:checked::after {
+    top: -7px;
+    left: 5px;
+    width: 3px;
+    height: 8px;
+    border: 2px solid transparent;
+    border-right-color: #000000;
+    border-bottom-color:#000000;
+    border-radius: 0;
+    transform: rotate(45deg);
+}
+
+.task__text {
+    /* word-break: break-all; */
+    hyphens: auto;
+    margin-left: 25px;
+}
+.task__delete-btn {
+    margin-left: auto;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    background-color: transparent;
+    background-image: url("./icons/close.svg");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
