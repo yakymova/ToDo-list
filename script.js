@@ -98,10 +98,15 @@ class TaskView {
             input.checked = true;
         }
 
-        let btn = document.createElement('button');
-        btn.classList.add("task__delete-btn");
-        btn.addEventListener('click', this.deleteTast.bind(this, div));
-        div.append(btn);
+        let btnEdit = document.createElement('button');
+        btnEdit.classList.add("task__edit-btn");
+        btnEdit.addEventListener('click', this.deleteTask.bind(this, div));
+        div.append(btnEdit);
+
+        let btnDelete = document.createElement('button');
+        btnDelete.classList.add("task__delete-btn");
+        btnDelete.addEventListener('click', this.deleteTask.bind(this, div));
+        div.append(btnDelete);
 
         element.append(div);
     }
@@ -112,7 +117,7 @@ class TaskView {
         element.classList.toggle("completed");
     }
 
-    deleteTast(element) {
+    deleteTask(element) {
         element.remove();
         dataService.delete(this.task);
     }
