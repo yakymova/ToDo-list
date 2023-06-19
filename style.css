@@ -8,52 +8,46 @@
 
 body {
     background-color: rgba(13, 111, 118, 0.4);
-    /* font-size: 16px; */
 }
-/* @media (max-width: 767.99px) {
-    body {
-        font-size: 14px;
-    }
-} */
-/* @media (max-width: 479.99px) {
-} */
 
 button {
     letter-spacing: 0.5px;
     border: none;
     border-radius: 5px;
     background-color: transparent;
-    transition: all 0.2s;
+    transition: all 0.3s;
     font-size: inherit;
 }
 
 button:hover {
     cursor: pointer;
     box-shadow: 0px 1px 2px 0px rgba(144, 133, 133, 0.6);
+    color: #ffffff;
 }
 
 .container {
     max-width: 500px;
-    margin: 50px auto 0;
+    margin: 50px auto;
     padding: 10px;
     background-color: #ffffff;
     border-radius: 10px;
 }
-/* @media (max-width: 767.99px) {
-    .container {
-    }
-} */
-/* @media (max-width: 479.99px) {
-    .container {
-    }
-} */
-
 .title {
     text-transform: uppercase;
     text-align: center;
     margin-bottom: 20px;
     text-shadow: 1px 1px 5px rgba(13, 111, 118, 0.8);
 }
+@media (max-width: 479.99px) {
+    .container {
+        margin: 20px 10px;
+    }
+    .title {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+}
+
 .input-panel {
     display: flex;
     justify-content: space-between;
@@ -90,30 +84,23 @@ button:hover {
 }
 .controls-btn {
     padding: 2px 5px;
+    margin-top: 2px;
     background-color: rgba(13, 111, 118, 0.3);
 }
 
-.task-list {
-
+.task-list .task:nth-child(even) {
+    background-color:  rgba(13, 111, 118, 0.1);
 }
-/* @media (max-width: 1023.99px) {
-    .task-list {
-    }
-}
-@media (max-width: 479.99px) {
-    .task-list {
-    }
-} */
 .task {
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
+    padding: 5px 0;
     position: relative;
     background-color: transparent;
     transition: all 0.5s;
 }
 .completed {
-    /* background-color: rgba(65, 172, 65, 0.6); */
     text-decoration: line-through;
     opacity: 0.5;
 }
@@ -134,7 +121,6 @@ button:hover {
     height: 13px;
     width: 13px;
     border: 1px solid rgba(13, 111, 118, 0.8);
-    /* border-radius: 3px 0 3px; */
     border-radius: 50%;
     transition: all 0.3s;
 } 
@@ -144,32 +130,88 @@ button:hover {
     width: 3px;
     height: 8px;
     border: 2px solid transparent;
-    border-right-color: #000000;
-    border-bottom-color:#000000;
+    border-right-color: rgb(0, 128, 0);
+    border-bottom-color: rgb(0, 128, 0);
     border-radius: 0;
     transform: rotate(45deg);
 }
 
 .task__text {
+    flex: 1 1 auto;
     /* word-break: break-all; */
     hyphens: auto;
     margin-left: 25px;
 }
+.task__text:focus {
+    outline: 1px solid  rgb(13, 111, 118);
+    box-shadow: 0px 1px 2px 0px rgba(144, 133, 133, 0.6);
+    background-color: rgba(90, 116, 118, 0.1);
+}
+
 .task__delete-btn, 
 .task__edit-btn {
-    width: 15px;
-    height: 15px;
+    width: 20px;
+    height: 20px;
     flex-shrink: 0;
+    margin-left: 10px;
     background-color: transparent;
     background-repeat: no-repeat;
     background-size: cover;
     border-radius: 50%;
 }
 .task__delete-btn {
-    background-image: url("./icons/close.svg");
-    margin-left: 10px;
+    background-image: url("./icons/delete.svg");
 }
 .task__edit-btn {
     background-image: url("./icons/edit.svg");
-    margin-left: auto;
+}
+.btn-save-change {
+    background-image: url("./icons/done.svg");
+    background-color: rgba(90, 116, 118, 0.2);
+}
+.task-list-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    /* display: none; */
+}
+#progress-completed-tasks {
+    position: relative;
+    border: 1px solid rgba(90, 116, 118, 0.2);
+}
+#delete-all-completed-tasks {
+    background-color: rgba(13, 111, 118, 0.4);
+    padding: 5px 22px 5px 5px;
+    background-image: url("./icons/close.svg");
+    background-repeat: no-repeat;
+    background-position: center right;
+    background-size: 18px;
+}
+#delete-all-completed-tasks:hover {
+    color: #000000;
+}
+@media (max-width: 479.99px) {
+    .task-list-footer {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .task-list-footer__item {
+        flex: 1 1 100%;
+    }
+}
+
+#progress-fill-color {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    background-color: rgba(255, 255, 0, 0.5);
+    height: 100%;
+    transition: all 0.5s;
+}
+#progress-text {
+    position: relative;
+    z-index: 1;
+    padding: 0 5px;
+    vertical-align: middle;
 }

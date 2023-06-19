@@ -26,6 +26,11 @@ let dataService = {
         let index = this.tasks.indexOf(task);
         this.tasks.splice(index, 1);
         this.save();
+    },
+
+    deleteAllCompleted() {
+        this.tasks = this.tasks.filter(task => task.isDone == false);
+        this.save();
     }
 }
 
@@ -37,22 +42,29 @@ class Task {
 }
 
 class TasksListView {
-    constructor(element) {
+    constructor(element, textField, fillField) {
         this.element = element;
+        this.progressCompletedTextField = textField;
+        this.progressCompletedFillField = fillField;
     }
 
     #drawList(tasksElements) {
         this.element.innerHTML = "";
 
         tasksElements.forEach(taskElement => {
-            taskElement.createIn(this.element);
+            taskElement.createIn(this.element, this.showProgressOfCompletedTasks.bind(this));
         });
     }
 
     drawAll() {
         let taskElements = [];
         let tasks = dataService.allTasks;
-        if (tasks.length == 0) return;
+        // if (tasks.length == 0) return;
+
+        if (tasks.length === 0) {
+            this.element.innerHTML = '<p>No new tasks</p>';
+            return;
+        }
 
         tasks.forEach(task => {
             taskElements.push(new TaskView(task))
@@ -63,12 +75,42 @@ class TasksListView {
     drawNotCompleted() {
         let taskElements = [];
         let tasks = dataService.notCompletedTasks;
-        if (tasks.length == 0) return;
+        // if (tasks.length == 0) return;
+
+        if (tasks.length === 0) {
+            this.element.innerHTML = '<p>No unfinished tasks</p>';
+            return;
+        }
 
         tasks.forEach(task => {
             taskElements.push(new TaskView(task))
         });
         this.#drawList(taskElements);
+    }
+
+    calculateProgressOfCompletedTasks() {
+        let allTasks = dataService.allTasks.length;
+        let width, completedTasks;
+
+        if (allTasks === 0) {
+            width = '0%';
+            completedTasks = 0;
+        }
+        else {
+            completedTasks = allTasks - dataService.notCompletedTasks.length;
+            width = (completedTasks / allTasks * 100) + '%';
+        }
+
+        return { allTasks, completedTasks, width };
+    }
+
+    showProgressOfCompletedTasks() {
+        let { allTasks, completedTasks, width } = this.calculateProgressOfCompletedTasks();
+
+        let text = `${completedTasks} of ${allTasks} tasks done`;
+
+        this.progressCompletedTextField.textContent = text;
+        this.progressCompletedFillField.style.width = width;
     }
 }
 
@@ -77,49 +119,81 @@ class TaskView {
         this.task = task;
     }
 
-    createIn(element) {
+    createIn(element, showProgress) {
+
         let div = document.createElement("div");
         div.classList.add("task");
 
         let input = document.createElement("input");
         input.type = "checkbox";
         input.classList.add("custom-checkbox");
-        input.addEventListener("click", this.changeState.bind(this, div));
-
-        let p = document.createElement("p");
-        p.classList.add("task__text");
-        p.innerText = this.task.text;
-
-        div.append(input);
-        div.append(p);
+        input.addEventListener("click", this.changeState.bind(this, div, showProgress));
 
         if (this.task.isDone) {
             div.classList.add("completed");
             input.checked = true;
         }
 
+        div.append(input);
+
+        let p = document.createElement("p");
+        p.classList.add("task__text");
+        p.innerText = this.task.text;
+
         let btnEdit = document.createElement('button');
         btnEdit.classList.add("task__edit-btn");
-        btnEdit.addEventListener('click', this.deleteTask.bind(this, div));
-        div.append(btnEdit);
+        btnEdit.addEventListener('click', this.editTask.bind(this, div));
+
+        p.oninput = () => {
+            this.task.text = p.innerText;
+            dataService.save();
+        }
+        p.onblur = () => {
+            p.contentEditable = false;
+            // btnEdit.classList.toggle("btn-save-change");
+        }
 
         let btnDelete = document.createElement('button');
         btnDelete.classList.add("task__delete-btn");
-        btnDelete.addEventListener('click', this.deleteTask.bind(this, div));
-        div.append(btnDelete);
+        btnDelete.addEventListener('click', this.deleteTask.bind(this, div, showProgress));
 
+        div.append(p);
+        div.append(btnEdit);
+        div.append(btnDelete);
         element.append(div);
+
+        showProgress();
     }
 
-    changeState(element) {
+    changeState(element, showProgress) {
         this.task.isDone = !this.task.isDone;
         dataService.save();
         element.classList.toggle("completed");
+        showProgress();
     }
 
-    deleteTask(element) {
+    editTask(element) {
+        let btn = element.querySelector(".task__edit-btn");
+        btn.classList.toggle("btn-save-change");
+
+        if (!btn.classList.contains("btn-save-change")) return;
+
+        let textField = element.querySelector("p");
+        textField.contentEditable = true;
+
+        const selection = window.getSelection();
+        const range = document.createRange();
+        selection.removeAllRanges();
+        range.selectNodeContents(textField);
+        range.collapse(false);
+        selection.addRange(range);
+        textField.focus();
+    }
+
+    deleteTask(element, showProgress) {
         element.remove();
         dataService.delete(this.task);
+        showProgress();
     }
 }
 
@@ -130,16 +204,27 @@ let startMessage = document.querySelector("#start-message");
 let showAllButton = document.querySelector("#show-all-btn");
 let showNotCompletedButton = document.querySelector("#show-not-completed-btn");
 let taskList = document.querySelector(".task-list");
+let taskListFooter = document.querySelector(".task-list-footer");
+let progressCompletedTasksText = document.querySelector("#progress-text");
+let progressCompletedTasksFillColor = document.querySelector("#progress-fill-color");
+let deleteAllCompletedButton = document.querySelector("#delete-all-completed-tasks");
 
 dataService.open();
-let tasksListView = new TasksListView(taskList);
+let tasksListView = new TasksListView(taskList, progressCompletedTasksText, progressCompletedTasksFillColor);
 
 window.addEventListener("load", function () {
     tasksListView.drawAll();
+    tasksListView.showProgressOfCompletedTasks();
+
 });
 
 showAllButton.addEventListener("click", () => tasksListView.drawAll());
 showNotCompletedButton.addEventListener("click", () => tasksListView.drawNotCompleted());
+deleteAllCompletedButton.addEventListener('click', () => {
+    dataService.deleteAllCompleted();
+    tasksListView.drawAll();
+    tasksListView.showProgressOfCompletedTasks();
+});
 
 addTaskButton.addEventListener("click", addTaskHandler);
 taskNameInput.addEventListener("keydown", function (e) {
@@ -148,7 +233,10 @@ taskNameInput.addEventListener("keydown", function (e) {
 
 function addTaskHandler() {
     if (taskNameInput.value) {
-        if (!startMessage.hidden) startMessage.hidden = true;
+        // if (!startMessage.hidden) {
+        //     startMessage.hidden = true;
+        //     // taskListFooter.style.display = 'flex';
+        // }
 
         let newTask = new Task(taskNameInput.value);
         dataService.add(newTask);
