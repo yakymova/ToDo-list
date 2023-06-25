@@ -173,8 +173,11 @@ button:hover {
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
-    /* display: none; */
 }
+.hidden {
+    display: none;
+}
+
 #progress-completed-tasks {
     position: relative;
     border: 1px solid rgba(90, 116, 118, 0.2);

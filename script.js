@@ -42,10 +42,11 @@ class Task {
 }
 
 class TasksListView {
-    constructor(element, textField, fillField) {
+    constructor(element, progressBlock, textField, fillField) {
         this.element = element;
-        this.progressCompletedTextField = textField;
-        this.progressCompletedFillField = fillField;
+        this.progressCompletedBlock = progressBlock;
+        this.textProgressCompleted = textField;
+        this.fillProgressCompleted = fillField;
     }
 
     #drawList(tasksElements) {
@@ -54,6 +55,8 @@ class TasksListView {
         tasksElements.forEach(taskElement => {
             taskElement.createIn(this.element, this.showProgressOfCompletedTasks.bind(this));
         });
+
+        this.progressCompletedBlock.classList.remove("hidden");
     }
 
     drawAll() {
@@ -107,16 +110,22 @@ class TasksListView {
     showProgressOfCompletedTasks() {
         let { allTasks, completedTasks, width } = this.calculateProgressOfCompletedTasks();
 
+        if (allTasks === 0) {
+            this.progressCompletedBlock.classList.add("hidden");
+            return;
+        }
+
         let text = `${completedTasks} of ${allTasks} tasks done`;
 
-        this.progressCompletedTextField.textContent = text;
-        this.progressCompletedFillField.style.width = width;
+        this.textProgressCompleted.textContent = text;
+        this.fillProgressCompleted.style.width = width;
     }
 }
 
 class TaskView {
     constructor(task) {
         this.task = task;
+        this.blurEventOccurred = false;
     }
 
     createIn(element, showProgress) {
@@ -144,13 +153,13 @@ class TaskView {
         btnEdit.classList.add("task__edit-btn");
         btnEdit.addEventListener('click', this.editTask.bind(this, div));
 
-        p.oninput = () => {
+        p.onblur = () => {
             this.task.text = p.innerText;
             dataService.save();
-        }
-        p.onblur = () => {
+
             p.contentEditable = false;
-            // btnEdit.classList.toggle("btn-save-change");
+            this.blurEventOccurred = true;
+            btnEdit.classList.remove("btn-save-change");
         }
 
         let btnDelete = document.createElement('button');
@@ -174,11 +183,13 @@ class TaskView {
 
     editTask(element) {
         let btn = element.querySelector(".task__edit-btn");
-        btn.classList.toggle("btn-save-change");
+
+        if (!this.blurEventOccurred) btn.classList.toggle("btn-save-change");
+        else this.blurEventOccurred = false;
 
         if (!btn.classList.contains("btn-save-change")) return;
 
-        let textField = element.querySelector("p");
+        let textField = element.querySelector(".task__text");
         textField.contentEditable = true;
 
         const selection = window.getSelection();
@@ -210,7 +221,7 @@ let progressCompletedTasksFillColor = document.querySelector("#progress-fill-col
 let deleteAllCompletedButton = document.querySelector("#delete-all-completed-tasks");
 
 dataService.open();
-let tasksListView = new TasksListView(taskList, progressCompletedTasksText, progressCompletedTasksFillColor);
+let tasksListView = new TasksListView(taskList, taskListFooter, progressCompletedTasksText, progressCompletedTasksFillColor);
 
 window.addEventListener("load", function () {
     tasksListView.drawAll();
